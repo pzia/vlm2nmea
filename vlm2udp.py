@@ -51,7 +51,7 @@ def millideg2nmea(mdeg, way = 'NS'):
         deg = math.ceil(fdeg)
         suffix = way[1]
     minutes = (fdeg-deg)*60
-    return "%i%f,%s" % (abs(deg), abs(minutes), suffix)
+    return "%3.4f,%s" % (abs(deg)*100+ abs(minutes), suffix)
 
 def epoc2nmea_time(t):
     return time.strftime('%H%M%S.000', time.gmtime(time.time()))
@@ -108,10 +108,10 @@ def boatinfo2nmea(email, passwd, idu):
     nmea['type_positionning'] = '1'
     nmea['HDOP'] = '1.0'
     nmea['altitude'] = '10.0,M'
-    nmea['GPGAA_fill'] = ',,,,,0000'
+    nmea['GPGAA_fill'] = ',,,,0000'
     nmea['state'] = 'A'
     nmea['speed'] = "%3.2f" % boatinfo['TWS']
-    nmea['heading'] = "%3.2f" % boatinfo['HDG']
+    nmea['heading'] = "%3i" % boatinfo['HDG']
     nmea['GPRMC_fill'] = ',,,A'
     
     return nmea
@@ -132,6 +132,6 @@ if __name__ == "__main__":
             lastup = time.time()
         if DEBUG :
             print "Sending trame"
-        vu.feed(nmea_GPGAA(nmea))
-        vu.feed(nmea_GPRMC(nmea))
+        vu.feed(nmea_GPGAA(nmea)+"\r\n")
+        vu.feed(nmea_GPRMC(nmea)+"\r\n")
         time.sleep(VLM_REFRESH_GPS)
